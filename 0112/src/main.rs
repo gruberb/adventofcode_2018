@@ -21,15 +21,14 @@ fn part_two(nums: &Vec<i64>) {
     seen.insert(0);
 
     let mut cur_sum = 0;
-    
-      for val in nums.into_iter().cycle() {
-          cur_sum += val;
-          println!("current: {}", cur_sum);
-          if seen.contains(&cur_sum) {
-              println!("FOUND: {}", &cur_sum);
-              break 
-            }
-            
-            seen.insert(cur_sum);
+   
+    for val in nums.into_iter().cycle() {
+        cur_sum += val;
+        if seen.contains(&cur_sum) {
+            println!("FOUND: {}", &cur_sum);
+            break 
         }
+            
+        seen.insert(cur_sum);
+    }
 }
