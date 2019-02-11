@@ -3,7 +3,8 @@ use std::io::{BufRead, BufReader};
 use std::collections::HashSet;
 
 fn main() {
-    let file = File::open("input.txt").unwrap();
+    let file = File::open("input.txt").unwrap()
+        .expect("Ups, didn't work!!");
 
     let nums: Vec<i64> = BufReader::new(file).lines().into_iter().map(|l| {
         l.ok().and_then(|s| s.parse().ok()).unwrap_or(0)
