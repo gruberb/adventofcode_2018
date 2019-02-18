@@ -1,16 +1,17 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap,HashSet};
 
 fn main() -> Result<(), Error> {
     let vec = read(File::open("./src/input.txt")?)?;
-    let mut first: HashMap<String, String> = HashMap::new();
-    let mut more: HashMap<String, String> = HashMap::new();
-    
+    let mut grid: HashMap<String, String> = HashMap::new();
+    let mut fabric: HashMap<String, String> = HashMap::new();
+    let mut ids: HashSet<String> = HashSet::new();
+
     for entry in vec.iter() {
         let at_sign = entry.find('@');
         let colon = entry.find(':');
-
+        let id = entry.get(1..(at_sign).unwrap()-1).unwrap();
         let coord_start = at_sign.unwrap() + 2;
         let coord_end = colon.unwrap();
 
@@ -22,7 +23,7 @@ fn main() -> Result<(), Error> {
             .split(',')
             .collect();
 
-        let fabric: Vec<&str> = entry
+        let dimensions: Vec<&str> = entry
             .get(size_start..)
             .unwrap()
             .split('x')
@@ -31,27 +32,30 @@ fn main() -> Result<(), Error> {
         let left = coordinates[0].parse::<i32>().unwrap();
         let top = coordinates[1].parse::<i32>().unwrap();
 
-        let fabric_wide = fabric[0].parse::<i32>().unwrap();
-        let fabric_tall = fabric[1].parse::<i32>().unwrap();
+        let fabric_wide = dimensions[0].parse::<i32>().unwrap();
+        let fabric_tall = dimensions[1].parse::<i32>().unwrap();
         
+        ids.insert(id.to_string());
+
         for wide in 0..fabric_wide {
             for tall in 0..fabric_tall {
                 let x = left + wide;
                 let y = top + tall;
                 let coord = format!("{},{}", x, y);
-                let mark = String::from("X");
-                if first.contains_key(&coord) {
-                    if !more.contains_key(&coord) {
-                        more.insert(coord, mark);
-                    }
-                } else {
-                    first.insert(coord, mark);
-                }
+                
+                if grid.contains_key(&coord) {
+                    ids.remove(grid.get(&coord).unwrap());
+                    ids.remove(&id.to_string());
+                    fabric.insert(format!("{},{}", x, y), String::from(id));
+                } 
+                
+                grid.insert(format!("{},{}", x, y), String::from(id));
             }
         }
     }
     
-    println!("{:?}", more.len());
+    println!("{:?}", fabric.len());
+    println!("{:?}", ids);
     Ok(())
 }
 
